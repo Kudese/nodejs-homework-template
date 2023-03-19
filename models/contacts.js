@@ -1,14 +1,26 @@
-// const fs = require('fs/promises')
+const fs = require("fs/promises");
 
-const listContacts = async () => {}
+const list = async function () {
+  const list = await fs.readFile("models/contacts.json");
+  return JSON.parse(list);
+};
 
-const getContactById = async (contactId) => {}
+const listContacts = async () => {
+  return await list();
+};
 
-const removeContact = async (contactId) => {}
+const getContactById = async ({contactId}) => {
+  console.log(contactId)
+  const contacts = await list()
+  return contacts.filter((contact) => contact.id === contactId
+  );
+};
 
-const addContact = async (body) => {}
+const removeContact = async (contactId) => {};
 
-const updateContact = async (contactId, body) => {}
+const addContact = async (body) => {};
+
+const updateContact = async (contactId, body) => {};
 
 module.exports = {
   listContacts,
@@ -16,4 +28,4 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
-}
+};
