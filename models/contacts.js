@@ -9,11 +9,11 @@ const listContacts = async () => {
   return await list();
 };
 
-const getContactById = async ({contactId}) => {
-  console.log(contactId)
-  const contacts = await list()
-  return contacts.filter((contact) => contact.id === contactId
-  );
+const getContactById = async ({ contactId }) => {
+  const contacts = await list();
+  const result = contacts.filter((contact) => contact.id === contactId);
+
+  return result;
 };
 
 const removeContact = async (contactId) => {};
