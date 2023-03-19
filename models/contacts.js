@@ -1,5 +1,5 @@
 const fs = require("fs/promises");
-
+const { v4: uuidv4 } = require('uuid');
 const list = async function () {
   const list = await fs.readFile("models/contacts.json");
   return JSON.parse(list);
@@ -18,7 +18,11 @@ const getContactById = async ({ contactId }) => {
 
 const removeContact = async (contactId) => {};
 
-const addContact = async (body) => {};
+const addContact = async (body) => {
+ const contact = {...body, id: uuidv4()}
+ fs.writeFile("models/contacts.json",contact, )
+return contact
+};
 
 const updateContact = async (contactId, body) => {};
 
