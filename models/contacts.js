@@ -42,22 +42,21 @@ const addContact = async (body) => {
   return newContact;
 };
 
-const updateContact = async ({contactId}, body) => {
-  const db = await list()
+const updateContact = async ({ contactId }, body) => {
+  const db = await list();
   const inDB = db.find((contact) => contact.id === contactId);
   if (inDB) {
-    const result = db.map(el=>{
-      if(el.id===contactId){
-        return {...el, ...body}
+    const result = db.map((el) => {
+      if (el.id === contactId) {
+        return { ...el, ...body };
       }
-      return el
-    })
-   fs.writeFile(BASE_PATH, JSON.stringify(result))
-  return { status: 200, msg: "Contact update" }
-
+      return el;
+    });
+    fs.writeFile(BASE_PATH, JSON.stringify(result));
+    return { status: 200, msg: "Contact update" };
   }
-  
-  return { status: 404, msg: "Not found" }
+
+  return { status: 404, msg: "Not found" };
 };
 
 module.exports = {

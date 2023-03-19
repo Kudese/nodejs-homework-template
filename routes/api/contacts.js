@@ -27,14 +27,13 @@ const shemaPost = Joi.object({
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
     .required(),
-  phone: Joi.number().required()
+  phone: Joi.number().required(),
 });
 
 router.post("/", async (req, res, next) => {
- 
   const isValidate = shemaPost.validate(req.body);
   if (isValidate.error) {
-    return res.status(400).json({ message: isValidate.error.message});
+    return res.status(400).json({ message: isValidate.error.message });
   }
   const contactInDB = await addContact(req.body);
 
@@ -52,13 +51,13 @@ const shemaPut = Joi.object({
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
     .required(),
-  phone: Joi.number()
+  phone: Joi.number(),
 });
 router.put("/:contactId", async (req, res, next) => {
   const isValidate = shemaPut.validate(req.body);
-  
+
   const { name, email, phone } = req.body;
-  if (!name && !email && !phone &&isValidate.error) {
+  if (!name && !email && !phone && isValidate.error) {
     return res.status(400).json({ message: isValidate.error.message });
   }
 
