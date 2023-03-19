@@ -6,7 +6,7 @@ const {
   removeContact,
   updateContact,
 } = require("../../models/contacts");
-
+const Joi = require("joi");
 const router = express.Router();
 
 router.get("/", async (req, res, next) => {
@@ -22,13 +22,19 @@ router.get("/:contactId", async (req, res, next) => {
   return res.json(contact);
 });
 
-router.post("/", async (req, res, next) => {
-  const { name, email, phone } = req.body;
+const shemaPost = Joi.object({
+  name: Joi.string().alphanum().min(3).max(30).required(),
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .required(),
+  phone: Joi.number().required()
+});
 
-  if (!name || !email || !phone) {
-    return res
-      .status(400)
-      .json({ message: "missing required name field"});
+router.post("/", async (req, res, next) => {
+ 
+  const isValidate = shemaPost.validate(req.body);
+  if (isValidate.error) {
+    return res.status(400).json({ message: isValidate.error.message});
   }
   const contactInDB = await addContact(req.body);
 
@@ -36,21 +42,27 @@ router.post("/", async (req, res, next) => {
 });
 
 router.delete("/:contactId", async (req, res, next) => {
- 
-   const{ status, msg }= await removeContact(req.params)
+  const { status, msg } = await removeContact(req.params);
 
   res.status(status).json({ message: msg });
 });
 
+const shemaPut = Joi.object({
+  name: Joi.string().alphanum().min(3).max(30),
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .required(),
+  phone: Joi.number()
+});
 router.put("/:contactId", async (req, res, next) => {
+  const isValidate = shemaPut.validate(req.body);
+  
   const { name, email, phone } = req.body;
-  if (!name && !email && !phone) {
-    return res
-      .status(400)
-      .json({ message: "missing fields"});
+  if (!name && !email && !phone &&isValidate.error) {
+    return res.status(400).json({ message: isValidate.error.message });
   }
- 
-   const {status, msg} = await updateContact(req.params, req.body)
+
+  const { status, msg } = await updateContact(req.params, req.body);
 
   res.status(status).json({ message: msg });
 });
