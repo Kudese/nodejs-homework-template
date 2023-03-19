@@ -13,29 +13,52 @@ const listContacts = async () => {
 };
 
 const getContactById = async ({ contactId }) => {
-  const contacts = await list();
-  const result = contacts.filter((contact) => contact.id === contactId);
+  const db = await list();
+  const result = db.filter((contact) => contact.id === contactId);
 
   return result;
 };
 
-const removeContact = async (contactId) => {};
+const removeContact = async ({ contactId }) => {
+  const db = await list();
+
+  const inDB = db.find((contact) => contact.id === contactId);
+  if (inDB) {
+    const result = db.filter((contact) => contact.id !== contactId);
+    fs.writeFile(BASE_PATH, JSON.stringify(result));
+    return { status: 200, msg: "contact deleted" };
+  }
+
+  return { status: 404, msg: "Not found" };
+};
 
 const addContact = async (body) => {
-  const contact = await list();
-  console.log(contact,"contact")
+  const db = await list();
   const newContact = { ...body, id: uuidv4() };
-  console.log(newContact,"newContact")
 
-  const result = [...contact ,newContact];
-  console.log(result,"result")
+  const result = [...db, newContact];
 
-  console.log(result)
   fs.writeFile(BASE_PATH, JSON.stringify(result));
   return newContact;
 };
 
-const updateContact = async (contactId, body) => {};
+const updateContact = async ({contactId}, body) => {
+  const db = await list()
+  const inDB = db.find((contact) => contact.id === contactId);
+  if (inDB) {
+    const result = db.map(el=>{
+      if(el.id===contactId){
+        return {...el, ...body}
+      }
+      return el
+    })
+   fs.writeFile(BASE_PATH, JSON.stringify(result))
+  return { status: 200, msg: "Contact update" }
+
+  }
+  
+  return { status: 404, msg: "Not found" }
+};
 
 module.exports = {
   listContacts,
