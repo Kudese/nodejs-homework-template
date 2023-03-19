@@ -1,7 +1,10 @@
 const fs = require("fs/promises");
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
+const path = require("path");
+
+const BASE_PATH = path.join("models", "contacts.json");
 const list = async function () {
-  const list = await fs.readFile("models/contacts.json");
+  const list = await fs.readFile(BASE_PATH);
   return JSON.parse(list);
 };
 
@@ -19,9 +22,17 @@ const getContactById = async ({ contactId }) => {
 const removeContact = async (contactId) => {};
 
 const addContact = async (body) => {
- const contact = {...body, id: uuidv4()}
- fs.writeFile("models/contacts.json",contact, )
-return contact
+  const contact = await list();
+  console.log(contact,"contact")
+  const newContact = { ...body, id: uuidv4() };
+  console.log(newContact,"newContact")
+
+  const result = [...contact ,newContact];
+  console.log(result,"result")
+
+  console.log(result)
+  fs.writeFile(BASE_PATH, JSON.stringify(result));
+  return newContact;
 };
 
 const updateContact = async (contactId, body) => {};
