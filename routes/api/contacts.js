@@ -1,22 +1,22 @@
 const express = require("express");
 
 const {
-  getContactByIDRout,
-  getContactRout,
-  postContactRout,
-  deleteContactRout,
-  putContactRout,
-} = require("../contacts/contatcs.helpers");
+  getContactByIDController,
+  getContactControllers,
+  postContactController,
+  deleteContactController,
+  putContactController,
+} = require("../controllers/contatcs");
 const router = express.Router();
 
-router.get("/", async (req, res) => getContactRout);
+router.get("/", async (req, res) => getContactControllers (req, res));
 
-router.get("/:contactId", async (req, res) => getContactByIDRout(req, res));
+router.get("/:contactId", async (req, res) => getContactByIDController(req, res));
 
-router.post("/", async (req, res) => postContactRout(req, res));
+router.post("/", async (req, res) => postContactController(req, res));
 
-router.delete("/:contactId", async (req, res) => deleteContactRout(req, res));
+router.delete("/:contactId", async (req, res) => deleteContactController(req, res));
 
-router.put("/:contactId", async (req, res) => putContactRout(req, res));
+router.put("/:contactId", async (req, res) => putContactController(req, res));
 
 module.exports = router;
