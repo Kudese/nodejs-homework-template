@@ -1,62 +1,66 @@
-const fs = require("fs/promises");
-const { v4: uuidv4 } = require("uuid");
-const path = require("path");
-
-const BASE_PATH = path.join("models", "contacts.json");
-const list = async function () {
-  const list = await fs.readFile(BASE_PATH);
-  return JSON.parse(list);
-};
+const { contact } = require("../models/contactsModel");
 
 const listContacts = async () => {
-  return await list();
-};
-
-const getContactById = async ({ contactId }) => {
-  const db = await list();
-  const result = db.filter((contact) => contact.id === contactId);
-
+  const result = await contact.find();
   return result;
 };
 
-const removeContact = async ({ contactId }) => {
-  const db = await list();
-
-  const inDB = db.find((contact) => contact.id === contactId);
-  if (inDB) {
-    const result = db.filter((contact) => contact.id !== contactId);
-    fs.writeFile(BASE_PATH, JSON.stringify(result));
-    return { status: 200, msg: "contact deleted" };
+const getContactById = async ({ contactId }) => {
+  try {
+    const result = await contact.findById(contactId).select("-__v");
+    return result;
+  } catch (error) {
+    return { status: 404, msg: "Not fuond contct in DB" };
   }
+};
 
-  return { status: 404, msg: "Not found" };
+const removeContact = async ({ contactId }) => {
+  try {
+    const res = await contact.findByIdAndDelete(contactId);
+    return { status: 200, msg: `contact ${res._id} deleted` };
+  } catch (error) {
+    return { status: 404, msg: "Not found contact, not deleted" };
+  }
 };
 
 const addContact = async (body) => {
-  const db = await list();
-  const newContact = { ...body, id: uuidv4() };
-
-  const result = [...db, newContact];
-
-  fs.writeFile(BASE_PATH, JSON.stringify(result));
-  return newContact;
+  try {
+    const result = await contact.create(body);
+    return result;
+  } catch (error) {
+    return error;
+  }
 };
 
 const updateContact = async ({ contactId }, body) => {
-  const db = await list();
-  const inDB = db.find((contact) => contact.id === contactId);
-  if (inDB) {
-    const result = db.map((el) => {
-      if (el.id === contactId) {
-        return { ...el, ...body };
-      }
-      return el;
-    });
-    fs.writeFile(BASE_PATH, JSON.stringify(result));
-    return { status: 200, msg: "Contact update" };
-  }
+  try {
+    await contact.exists({ _id: contactId });
+    try {
+      await contact.findByIdAndUpdate(contactId, body);
+      return { status: 200, msg: "Found and update" };
 
-  return { status: 404, msg: "Not found" };
+    } catch (error) {
+      return { status: 500, msg: "Ooppps DB is not work?" };
+    }
+  } catch (err) {
+    return { status: 404, msg: "Not found contact in DB, not uodate " };
+  }
+};
+
+const updateStatusContact = async ({ contactId }, body) => {
+  console.log("body", body);
+  console.log("id", contactId);
+  try {
+    await contact.exists({ _id: contactId });
+    try {
+      await contact.findByIdAndUpdate(contactId, body);
+      return { status: 200, msg: "Update favorite status" };
+    } catch (error) {
+      return { status: 500, msg: "Ooppps DB is not work?" };
+    }
+  } catch (error) {
+    return { status: 404, msg: "Not found contact in DB, not uodate " };
+  }
 };
 
 module.exports = {
@@ -65,4 +69,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
 };
