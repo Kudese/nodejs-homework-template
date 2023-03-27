@@ -1,61 +1,37 @@
-const fs = require("fs/promises");
-const { v4: uuidv4 } = require("uuid");
-const path = require("path");
 
-const BASE_PATH = path.join("models", "contacts.json");
-const list = async function () {
-  const list = await fs.readFile(BASE_PATH);
-  return JSON.parse(list);
-};
+const { contact } = require("../models/contactsModel");
 
 const listContacts = async () => {
-  return await list();
+  const result = await contact.find();
+  return result;
 };
 
 const getContactById = async ({ contactId }) => {
-  const db = await list();
-  const result = db.filter((contact) => contact.id === contactId);
-
+  const result = await contact.findById(contactId).select('-__v');
   return result;
 };
 
 const removeContact = async ({ contactId }) => {
-  const db = await list();
-
-  const inDB = db.find((contact) => contact.id === contactId);
-  if (inDB) {
-    const result = db.filter((contact) => contact.id !== contactId);
-    fs.writeFile(BASE_PATH, JSON.stringify(result));
-    return { status: 200, msg: "contact deleted" };
+  const res = await contact.findByIdAndDelete(contactId);
+  if (res === null) {
+    return { status: 404, msg: "Not found contact" };
   }
-
-  return { status: 404, msg: "Not found" };
+  return { status: 200, msg: `contact deleted` };
 };
 
 const addContact = async (body) => {
-  const db = await list();
-  const newContact = { ...body, id: uuidv4() };
+  const result = await contact.create(body);
 
-  const result = [...db, newContact];
-
-  fs.writeFile(BASE_PATH, JSON.stringify(result));
-  return newContact;
+  return result;
 };
 
 const updateContact = async ({ contactId }, body) => {
-  const db = await list();
-  const inDB = db.find((contact) => contact.id === contactId);
-  if (inDB) {
-    const result = db.map((el) => {
-      if (el.id === contactId) {
-        return { ...el, ...body };
-      }
-      return el;
-    });
-    fs.writeFile(BASE_PATH, JSON.stringify(result));
-    return { status: 200, msg: "Contact update" };
-  }
-
+  const te = await contact.exists({_id: contactId})
+  console.log(te)
+  // const result = await contact.findByIdAndUpdate(contactId,body)
+  // if (result) {
+  //   return { status: 200, msg: "Contact update" };
+  // }
   return { status: 404, msg: "Not found" };
 };
 

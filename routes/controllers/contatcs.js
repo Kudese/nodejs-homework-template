@@ -13,9 +13,11 @@ const getContactControllers = async function (req, res) {
 };
 
 const getContactByIDController = async function (req, res) {
+  
   const contact = await getContactById(req.params);
+ 
   if (contact.length === 0) {
-    return res.status(404).json({ message: "Not found ne" });
+    return res.status(404).json({ message: "Not found " });
   }
   return res.json(contact);
 };
@@ -26,6 +28,7 @@ const postContactController = async function (req, res) {
     return res.status(400).json({ message: isValidate.error.message });
   }
   const contactInDB = await addContact(req.body);
+  console.log(contactInDB,"sada")
   return res.status(201).json(contactInDB);
 };
 
