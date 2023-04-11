@@ -20,7 +20,6 @@ const usersRegisterControler = async (req, res) => {
   userInDB.__v = undefined;
   userInDB.password = undefined;
   userInDB._id = 0;
-  console.log(userInDB)
   return res.status(201).json({ user: userInDB });
 };
 module.exports = usersRegisterControler;

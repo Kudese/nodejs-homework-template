@@ -5,7 +5,7 @@ const userCurrent = async (id) => {
     const result = await users.findById(id);
     return {
       status: 200,
-      msg: { email: result.email, subscription: result.subscription },
+      msg: { email: result.email, subscription: result.subscription, avatarURL: result.avatarURL  },
     };
   } catch (error) {
     return {status:500, msg:"DB can not give you profile"}
