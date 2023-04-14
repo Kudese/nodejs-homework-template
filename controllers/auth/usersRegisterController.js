@@ -1,5 +1,5 @@
 const { usersRegister } = require("../../models/auth");
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 
 // const { shemaUser } = require("../../validate");
@@ -20,6 +20,8 @@ const usersRegisterControler = async (req, res) => {
   userInDB.__v = undefined;
   userInDB.password = undefined;
   userInDB._id = 0;
+  userInDB.verificationToken = undefined;
+
   return res.status(201).json({ user: userInDB });
 };
 module.exports = usersRegisterControler;

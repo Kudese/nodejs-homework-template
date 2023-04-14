@@ -5,6 +5,7 @@ const {
   userLogoutController,
   userCurrentController,
   userAvatarController,
+  checktVerifaceteToken,
 } = require("../../controllers/auth");
 const { checkToken, gravatarMiddleware } = require("../../middleware");
 const avatarWiddleware = require("../../middleware/avatarMiddleware");
@@ -23,5 +24,7 @@ router.post("/current", checkToken, async (req, res) =>
 router.patch("/avatar", checkToken, avatarWiddleware, async (req, res) =>
   userAvatarController(req, res)
 );
+router.post("/verify/:verificationToken", async (req, res) =>
+  checktVerifaceteToken(req, res)
+);
 module.exports = router;
-

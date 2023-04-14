@@ -1,22 +1,23 @@
-const { createVerifaceteToken } = require("../../controllers/auth");
+const { v4: uuidv4 } = require("uuid");
 const { sendVarifacateEmail } = require("../../services");
-const  {users}  = require("../Schema/");
+const { users } = require("../Schema/");
 
 const usersRegister = async (body) => {
-
-  const verifacatData= createVerifaceteToken(body.email)
+  const token = `localhost:3000/api/users/verify/:${uuidv4()}`;
+  const verifacatData = { verificationToken: token, verify: false };
   try {
-    const result = await users.create({...body, ...verifacatData});
-   try {
-     const resultVerifactData = await sendVarifacateEmail(body.email,verifacatData.verificationToken)
-     console.log(resultVerifactData)
-   } catch (error) {
-    
-   }
-    return  result;
+    const result = await users.create({ ...body, ...verifacatData });
+
+    const resultVerificate = await sendVarifacateEmail(
+      body.email,
+      verifacatData.verificationToken
+    );
+
+    console.log(resultVerificate);
+    return result;
   } catch (error) {
-    return error
+    return { status: 500, message: "DB is Ooopsss" };
   }
 };
 
-module.exports = usersRegister
+module.exports = usersRegister;
