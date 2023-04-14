@@ -3,10 +3,12 @@ const userLoginController = require('./userLoginController')
 const userLogoutController = require('./userLogoutController')
 const userCurrentController = require('./userCurrentController')
 const userAvatarController = require('./userAvatarController')
+const createVerifaceteToken = require("./createVerifaceteToken")
 module.exports ={
     usersRegisterController,
     userLoginController,
     userLogoutController,
     userCurrentController,
-    userAvatarController
+    userAvatarController,
+    createVerifaceteToken
 }
